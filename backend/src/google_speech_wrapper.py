@@ -6,7 +6,7 @@ from typing import Dict
 
 from google.cloud import speech
 
-from backend.settings import GOOGLE_SERVICE_JSON_FILE
+from settings import GOOGLE_SERVICE_JSON_FILE
 
 clients = {}
 

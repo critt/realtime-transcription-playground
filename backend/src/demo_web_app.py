@@ -3,7 +3,7 @@ import asyncio
 import socketio
 from aiohttp import web
 
-from backend.settings import BACKEND_PORT
+from settings import BACKEND_PORT
 from google_speech_wrapper import GoogleSpeechWrapper
 
 app = web.Application()
