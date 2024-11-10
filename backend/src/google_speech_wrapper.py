@@ -5,6 +5,7 @@ import threading
 from typing import Dict
 
 from google.cloud import speech
+from google.cloud import translate_v2 as translate
 
 from settings import GOOGLE_SERVICE_JSON_FILE
 
@@ -63,7 +64,7 @@ class ClientData:
         await self._conn.emit('speechData', {'data': data, 'isFinal': is_final})
 
 
-async def listen_print_loop(responses, client: ClientData):
+async def listen_translate_loop(responses, client: ClientData, translate_client: translate.Client, translate_language: str):
     """
     Code taken and slightly modified from https://github.com/googleapis/python-speech/blob/master/samples/microphone/transcribe_streaming_infinite.py
     Iterates through server responses and sends them back to client.
@@ -114,9 +115,15 @@ async def listen_print_loop(responses, client: ClientData):
         else:
             text = transcript + overwrite_chars
             print(text)
+            
+            translationResult = translate_client.translate(text, target_language=translate_language)
+            
+            print('Text: {}'.format(translationResult['input']))
+            print('Translation: {}'.format(translationResult['translatedText']))
+            print('Detected source language: {}'.format(translationResult['detectedSourceLanguage']))
 
             if client:
-                await client.send_client_data(text, True)
+                await client.send_client_data(translationResult['translatedText'], True)
 
             num_chars_printed = 0
 
@@ -127,15 +134,20 @@ class GoogleSpeechWrapper:
     @staticmethod
     async def start_listen(client_id: str):
         client = clients[client_id]
+        
         speech_client = speech.SpeechClient.from_service_account_json(GOOGLE_SERVICE_JSON_FILE)
+        translate_client = translate.Client.from_service_account_json(GOOGLE_SERVICE_JSON_FILE)
+        
         config = speech.RecognitionConfig(encoding=GoogleSpeechWrapper.encoding_map[client.audio_config['encoding']], sample_rate_hertz=client.audio_config['sampleRateHertz'],
                                           language_code=client.audio_config['languageCode'], enable_automatic_punctuation=True)
+        
         streaming_config = speech.StreamingRecognitionConfig(config=config, interim_results=client.general_config['interimResults'])
 
         audio_generator = client.generator()
         requests = (speech.StreamingRecognizeRequest(audio_content=content) for content in audio_generator)
         responses = speech_client.streaming_recognize(streaming_config, requests)
-        await listen_print_loop(responses, client)
+        
+        await listen_translate_loop(responses, client, translate_client, client.general_config['target_language'])
 
         # In case of ERROR
         # client.emit('googleCloudStreamError', err);
