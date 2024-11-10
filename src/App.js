@@ -59,7 +59,8 @@ const App = ({classes}) => {
         sampleRateHertz: 16000,
         languageCode: selectedLanguage,
       },
-      interimResults: true
+      interimResults: true,
+      target_language: 'de',
     }
   }
 
