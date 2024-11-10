@@ -173,3 +173,13 @@ class GoogleSpeechWrapper:
             return
 
         clients[client_id].add_data(data)
+    
+    @staticmethod # TODO: make use of this function in the frontend
+    def detect_language(text: str):
+        translate_client = translate.Client.from_service_account_json(GOOGLE_SERVICE_JSON_FILE)
+        return translate_client.detect_language(text)
+    
+    @staticmethod
+    def get_supported_languages():
+        translate_client = translate.Client.from_service_account_json(GOOGLE_SERVICE_JSON_FILE)
+        return translate_client.get_languages()
