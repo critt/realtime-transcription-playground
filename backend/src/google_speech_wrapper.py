@@ -147,7 +147,7 @@ class GoogleSpeechWrapper:
         requests = (speech.StreamingRecognizeRequest(audio_content=content) for content in audio_generator)
         responses = speech_client.streaming_recognize(streaming_config, requests)
         
-        await listen_translate_loop(responses, client, translate_client, client.general_config['target_language'])
+        await listen_translate_loop(responses, client, translate_client, client.general_config['targetLanguage'])
 
         # In case of ERROR
         # client.emit('googleCloudStreamError', err);
@@ -174,7 +174,7 @@ class GoogleSpeechWrapper:
 
         clients[client_id].add_data(data)
     
-    @staticmethod # TODO: make use of this function in the frontend
+    @staticmethod
     def detect_language(text: str):
         translate_client = translate.Client.from_service_account_json(GOOGLE_SERVICE_JSON_FILE)
         return translate_client.detect_language(text)
