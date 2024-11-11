@@ -60,7 +60,7 @@ const App = ({classes}) => {
         languageCode: selectedLanguage,
       },
       interimResults: true,
-      target_language: 'de',
+      targetLanguage: 'de',
     }
   }
 
