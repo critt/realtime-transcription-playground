@@ -13,13 +13,14 @@ clients = {}
 
 
 class ClientData:
-    def __init__(self, transcribe_thread, conn, config: Dict):
+    def __init__(self, transcribe_thread, conn, config: Dict, namespace: str):
         self._buff = queue.Queue()
         self._thread = transcribe_thread
         self._closed = True
         self._conn = conn
         self.general_config = {dict_key: config[dict_key] for dict_key in config if dict_key != 'audio'}
         self.audio_config = config['audio']
+        self.namespace = namespace
 
     async def close(self):
         self._closed = True
@@ -61,7 +62,7 @@ class ClientData:
             yield b"".join(data)
 
     async def send_client_data(self, data, is_final: bool):
-        await self._conn.emit('speechData', {'data': data, 'isFinal': is_final})
+        await self._conn.emit('speechData', {'data': data, 'isFinal': is_final}, namespace=self.namespace)
 
 
 async def listen_translate_loop(responses, client: ClientData, translate_client: translate.Client, translate_language: str):
@@ -154,9 +155,9 @@ class GoogleSpeechWrapper:
         # client._conn.emit('endGoogleCloudStream', '')
 
     @staticmethod
-    async def start_recognition_stream(sio, client_id: str, config: Dict):
+    async def start_recognition_stream(sio, client_id: str, config: Dict, namespace: str):
         if client_id not in clients:
-            clients[client_id] = ClientData(threading.Thread(target=asyncio.run, args=(GoogleSpeechWrapper.start_listen(client_id),)), sio, config)
+            clients[client_id] = ClientData(threading.Thread(target=asyncio.run, args=(GoogleSpeechWrapper.start_listen(client_id),)), sio, config, namespace=namespace)
             clients[client_id].start_transcribing()
         else:
             print('Warning - already running transcription for client')
