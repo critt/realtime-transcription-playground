@@ -2,7 +2,7 @@ import asyncio
 
 import socketio
 from aiohttp import web
-
+import json
 from settings import BACKEND_PORT
 from google_speech_wrapper import GoogleSpeechWrapper
 
@@ -33,11 +33,10 @@ async def connect_subject(sid, environ):
 async def disconnect_subject(sid):
     print(f'Client disconnected from /subject: {sid}')
 
-@asyncio.coroutine
 @sio.on('startGoogleCloudStream', namespace='/subject')
 async def start_google_stream_subject(sid, config):
     print(f'Starting streaming audio data from client {sid} on /subject')
-    await GoogleSpeechWrapper.start_recognition_stream(sio, sid, config, '/subject')
+    await GoogleSpeechWrapper.start_recognition_stream(sio, sid, json.loads(config), '/subject')
 
 @sio.on('binaryAudioData', namespace='/subject')
 async def receive_binary_audio_data_subject(sid, message):
@@ -57,11 +56,10 @@ async def connect_object(sid, environ):
 async def disconnect_object(sid):
     print(f'Client disconnected from /object: {sid}')
 
-@asyncio.coroutine
 @sio.on('startGoogleCloudStream', namespace='/object')
 async def start_google_stream_object(sid, config):
     print(f'Starting streaming audio data from client {sid} on /object')
-    await GoogleSpeechWrapper.start_recognition_stream(sio, sid, config, '/object')
+    await GoogleSpeechWrapper.start_recognition_stream(sio, sid, json.loads(config), '/object')
 
 @sio.on('binaryAudioData', namespace='/object')
 async def receive_binary_audio_data_object(sid, message):
