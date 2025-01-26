@@ -11,4 +11,4 @@ EXPOSE 10000
 CMD ["python", "src/demo_web_app.py"]
 
 # docker build -t transcription-service .
-# docker run -p 10000:10000 --name transcription-container transcription-service
+# docker run -it -p 10000:10000 --name transcription-container transcription-service

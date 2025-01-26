@@ -11,10 +11,12 @@ routes = web.RouteTableDef()
 
 @routes.get('/getSupportedLanguages')
 async def get_supported_languages(request):
+    print('Getting supported languages')
     return web.json_response(GoogleSpeechWrapper.get_supported_languages())
 
 @routes.get('/detectLanguage')
 async def detect_language(request):
+    print('Detecting language')
     text = request.query['text']
     return web.json_response(GoogleSpeechWrapper.detect_language(text))
 
@@ -70,5 +72,5 @@ async def close_google_stream_object(sid):
     print(f'Closing streaming data from client {sid} on /object')
     await GoogleSpeechWrapper.stop_recognition_stream(sid)
 
-
+print(f'Backend running on port {BACKEND_PORT}')
 web.run_app(app, port=BACKEND_PORT)
