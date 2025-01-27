@@ -6,7 +6,7 @@ RUN pip install -r requirements.txt
 COPY google-services.json .
 COPY ./src ./src
 
-EXPOSE 10000
+EXPOSE 8080
 
 CMD ["python", "src/demo_web_app.py"]
 

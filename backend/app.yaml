@@ -1,8 +1,2 @@
 runtime: custom
 env: flex
-entrypoint: python src/demo_web_app.py
-runtime_config:
-  python_version: 3
-
-env_variables:
-  GOOGLE_SERVICE_JSON_FILE: "google-services.json"
