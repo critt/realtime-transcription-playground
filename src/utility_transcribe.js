@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 
-const socket = new io.connect("http://0.0.0.0:10000/", {transports: ['websocket']});
+const socket = new io.connect("http://0.0.0.0:10000/", { transports: ['websocket'] });
 
 // Stream Audio
 let bufferSize = 2048,
@@ -22,7 +22,7 @@ let AudioStreamer = {
    * @param {function} onError Callback to run on an error if one is emitted.
    */
   initRecording: function (transcribeConfig, onData, onError) {
-    socket.emit('startGoogleCloudStream', {...transcribeConfig});
+    socket.emit('startGoogleCloudStream', { ...transcribeConfig });
     AudioContext = window.AudioContext || window.webkitAudioContext;
     context = new AudioContext();
     processor = context.createScriptProcessor(bufferSize, 1, 1);
